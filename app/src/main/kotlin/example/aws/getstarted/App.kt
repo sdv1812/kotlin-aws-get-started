@@ -10,15 +10,8 @@ import kotlinx.coroutines.runBlocking
 import java.util.*
 
 const val REGION = "us-west-2"
-val BUCKET = "bucket-${UUID.randomUUID()}"
-const val KEY = "key"
-
-class App {
-    val greeting: String
-        get() {
-            return "Hello World!"
-        }
-}
+const val BUCKET = "bucket-sanskar"
+val KEY = "key-${UUID.randomUUID()}"
 
 fun main(): Unit = runBlocking {
     S3Client.fromEnvironment { region = REGION }
@@ -41,13 +34,19 @@ fun main(): Unit = runBlocking {
 suspend fun setupTutorial(s3: S3Client) {
     println("Creating bucket $BUCKET...")
 
-    s3.createBucket(CreateBucketRequest {
-        bucket = BUCKET
-        createBucketConfiguration {
-            locationConstraint = BucketLocationConstraint.fromValue(REGION)
-        }
-    })
-    println("Bucket $BUCKET created successfully!")
+    try {
+        s3.createBucket(CreateBucketRequest {
+            bucket = BUCKET
+            createBucketConfiguration {
+                locationConstraint = BucketLocationConstraint.fromValue(REGION)
+            }
+        })
+        println("Bucket $BUCKET created successfully!")
+    } catch(e: BucketAlreadyOwnedByYou) {
+        println(e)
+    } catch (e: BucketAlreadyExists) {
+        println(e)
+    }
 }
 
 suspend fun cleanUp(s3: S3Client) {
