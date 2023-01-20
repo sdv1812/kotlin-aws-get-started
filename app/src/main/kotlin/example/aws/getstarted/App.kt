@@ -13,6 +13,13 @@ const val REGION = "us-west-2"
 const val BUCKET = "bucket-sanskar"
 val KEY = "key-${UUID.randomUUID()}"
 
+class App {
+    val greeting: String
+        get() {
+            return "Hello World!"
+        }
+}
+
 fun main(): Unit = runBlocking {
     S3Client.fromEnvironment { region = REGION }
         .use { s3 ->
